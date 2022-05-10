@@ -2,7 +2,7 @@ from fastapi import APIRouter, Response, status
 from config.db import conn
 from models.user import User
 from schemas.user import userEntity, usersEntity
-from passlib.hash import sha256_crypt
+from modules.hash import Hash
 from bson import ObjectId
 from starlette.status import HTTP_204_NO_CONTENT
 
@@ -29,11 +29,11 @@ async def find_user(id: str):
 @user.post("/users", response_model=User, tags=["users"])
 async def create_user(user: User):
     new_user = dict(user)
-    new_user["password"] = sha256_crypt.encrypt(new_user["password"])  # 비밀번호 해싱
+    new_user["password"] = Hash.bcrypt(new_user["password"])  # 비밀번호 해싱
     del new_user["id"]  # id가 null로 굳이 입력되는 것을 막기 위함.
-    id = await conn.users.insert_one(new_user).inserted_id  # id 타입은 ObjectId
+    result = await conn.users.insert_one(new_user)
 
-    user = await conn.users.find_one({"_id": id})  # 따라서 find_user와는 다름.
+    user = await conn.users.find_one({"_id": result.inserted_id})  # 따라서 find_user와는 다름.
     return userEntity(user)
 
 

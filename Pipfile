@@ -8,11 +8,13 @@ fastapi = "*"
 uvicorn = "*"
 pymongo = "*"
 pydantic = {extras = ["email"], version = "*"}
-passlib = "*"
 black = "*"
 motor = "*"
 cryptography = "*"
 openpyxl = "*"
+python-jose = "*"
+python-multipart = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
 
 [dev-packages]
 
