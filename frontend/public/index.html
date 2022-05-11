@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Web site created using create-react-app" />
+
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
@@ -24,12 +23,42 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
+  <!-- Meta Data -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WEPLAYLIST - Our Only One Playlist</title>
+
+  <!-- Fav Icon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/fav-icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/fav-icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/fav-icons/favicon-16x16.png">
+  <meta name="theme-color" content="#e43a90">
+
+  <!-- Dependency Styles -->
+  <link rel="stylesheet" href="dependencies/bootstrap/css/bootstrap.min.css" type="text/css">
+  <link rel="stylesheet" href="dependencies/intro/css/stylesheet.css" type="text/css">
+  <link rel="stylesheet" href="dependencies/swiper/swiper.min.css" type="text/css">
+  <link rel="stylesheet" href="dependencies/font-awesome/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="dependencies/wow/css/animate.css" type="text/css">
+  <link rel="stylesheet" href="dependencies/magnific-popup/magnific-popup.css" type="text/css">
+  <link rel="stylesheet" href="dependencies/jquery-ui/css/jquery-ui.css" type="text/css">
+  <link rel="stylesheet" href="dependencies/slick-carousel/css/slick.css" type="text/css">
+  <link rel="stylesheet" href="dependencies/colornip/css/colornip.min.css" type="text/css">
+  <link rel="stylesheet" href="dependencies/css-loader/css/css-loader.css" type="text/css">
+
+  <!-- Site Stylesheet -->
+  <link rel="stylesheet" href="assets/css/woocommerce.css" type="text/css">
+  <link rel="stylesheet" href="assets/css/app.css" type="text/css">
+  <link id="theme" rel="stylesheet" href="assets/css/theme-color/theme-default.css" type="text/css">
+
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <div id="modal-root"></div>
+  <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
 
@@ -39,5 +68,41 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-  </body>
+  <script src="dependencies/jquery/jquery.min.js"></script>
+  <script src="dependencies/jquery-ui/jquery-ui.min.js"></script>
+  <script src="dependencies/bootstrap/js/bootstrap.min.js"></script>
+  <script src="dependencies/swiper/js/swiper.min.js"></script>
+  <script src="dependencies/swiperRunner/swiperRunner.min.js"></script>
+  <script src="dependencies/wow/js/wow.min.js"></script>
+  <script src="dependencies/jquery.countdown/jquery.countdown.min.js"></script>
+  <script src="dependencies/magnific-popup/js/jquery.magnific-popup.min.js"></script>
+  <script src="dependencies/jquery.spinner/js/jquery.spinner.js"></script>
+  <script src="dependencies/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="dependencies/masonry-layout/masonry.pkgd.min.js"></script>
+  <script src="dependencies/imagesloaded/imagesloaded.pkgd.min.js"></script>
+  <script src="dependencies/slick-carousel/js/slick.min.js"></script>
+  <script src="assets/js/headroom.js"></script>
+  <script src="assets/js/soundmanager2.js"></script>
+  <script src="assets/js/mp3-player-button.js"></script>
+  <script src="assets/js/smoke.js"></script>
+  <script src="dependencies/FitText.js/js/jquery.fittext.js"></script>
+  <script src="dependencies/gmap3/js/gmap3.min.js"></script>
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js'></script>
+  <script src='dependencies/tilt.js/js/tilt.jquery.js'></script>
+  <script src='assets/js/parallax.min.js'></script>
+  <!-- Player -->
+  <script src="dependencies/jPlayer/js/jquery.jplayer.min.js"></script>
+  <script src="dependencies/jPlayer/js/jplayer.playlist.min.js"></script>
+  <script src="assets/js/myplaylist.js"></script>
+
+  <!-- Remove It -->
+  <script src="dependencies/colornip/colornip.min.js"></script>
+
+  <!--Google map api -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsBrMPsyNtpwKXPPpG54XwJXnyobfMAIc"></script>
+
+  <!-- Site Scripts -->
+  <script src="assets/js/app.js"></script>
+</body>
+
 </html>
