@@ -1,6 +1,8 @@
+from datetime import datetime
 from bson import ObjectId
 from fastapi import Depends, HTTPException, status
 from pydantic import EmailStr
+from models.user import RegisterModel, User
 from modules.hash import Hash
 from config.db import conn
 from fastapi.security import OAuth2PasswordBearer
@@ -23,6 +25,18 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise credentials_exception
     return user
+
+
+async def create_user(user: RegisterModel):
+    new_user = User(
+        username=user.username,
+        email=user.email,
+        password=Hash.bcrypt(user.password),
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
+    )
+    new_user = dict(new_user)
+    await conn.users.insert_one(new_user)
 
 
 async def auth(email: EmailStr, password: str):

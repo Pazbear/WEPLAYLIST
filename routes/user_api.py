@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends, Response, status, HTTPException
-from config.db import conn
-from models.user import User, Token
-from schemas.user import userEntity, usersEntity
-from starlette.status import HTTP_204_NO_CONTENT
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from models.user import RegisterModel, User, Token
+from schemas.user import userEntity
+from starlette.status import HTTP_201_CREATED
+from fastapi.security import OAuth2PasswordRequestForm
 
-from repository.user import auth, get_current_user
+from repository.user import auth, create_user, get_current_user
 from modules.hash import Hash
-from modules.jwt import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, verify_token
+from modules.jwt import create_access_token
 
 
 userApi = APIRouter()
@@ -15,6 +14,23 @@ userApi = APIRouter()
 """
 Service
 """
+
+
+@userApi.get("/api/users/me", response_model=User, tags=["User API"])
+async def read_me(current_user: User = Depends(get_current_user)):
+    return userEntity(current_user)
+
+
+@userApi.post("/api/users/register", status_code=HTTP_201_CREATED, tags=["User API"])
+async def register(user: RegisterModel):
+    try:
+        await create_user(user)
+        return Response(status_code=HTTP_201_CREATED)
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="서버 내부 에러",
+        )
 
 
 @userApi.post("/api/users/login", response_model=Token, tags=["User API"])
@@ -38,8 +54,3 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Incorrect username or password",
         )
-
-
-@userApi.get("/api/users/me", response_model=User, tags=["User API"])
-async def read_me(current_user: User = Depends(get_current_user)):
-    return userEntity(current_user)
