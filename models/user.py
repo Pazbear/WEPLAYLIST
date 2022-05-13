@@ -31,5 +31,5 @@ class RegisterModel(BaseModel):
 
 
 class LoginModel(BaseModel):
-    email: EmailStr
-    password: str
+    email: EmailStr = Field(...)
+    password: str = Field(min_length=6, max_length=12)

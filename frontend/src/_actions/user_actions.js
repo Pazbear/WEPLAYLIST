@@ -5,10 +5,17 @@ import {
     AUTH_USER,
 } from './types';
 
-const ApiUrl = "/api"
+const ApiUrl = "http://localhost:8000/api/users"
+const AxiosConfig = { headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('jwtToken')}` } }
+const AxiosLoginConfig = { headers: { 'Content-Type': 'application/x-www-form-urlencoded', Authorization: `Bearer ${localStorage.getItem('jwtToken')}` } }
+//login
 
+//data : {email : ?, password: ?}
 export function loginUser(dataToSubmit) {
-    const request = axios.post(`${ApiUrl}/login`, dataToSubmit)
+    const formdataToSubmit = new FormData()
+    formdataToSubmit.append('username', dataToSubmit.email)
+    formdataToSubmit.append('password', dataToSubmit.password)
+    const request = axios.post(`${ApiUrl}/login`, formdataToSubmit, AxiosLoginConfig)
         .then(response => response.data)
         .catch(error => error.response.data);
 
@@ -19,7 +26,7 @@ export function loginUser(dataToSubmit) {
 }
 
 export function authUser() {
-    const request = axios.get(`${ApiUrl}/get-session`)
+    const request = axios.get(`${ApiUrl}/me`, AxiosConfig)
         .then(response => response.data)
         .catch(error => error.response.data);
     return {

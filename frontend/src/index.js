@@ -13,6 +13,7 @@ import ReduxThunk from 'redux-thunk'
 
 
 import ScrollToTop from './components/views/_App/ScrollToTop'
+import 'antd/dist/antd.css';
 const createStoreWithMiddleware = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
