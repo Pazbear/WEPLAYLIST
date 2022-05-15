@@ -8,7 +8,11 @@ from modules.hash import Hash
 from bson import ObjectId
 from starlette.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED
 
-from repository.playlist import create_playlist, find_playlists_by_name
+from repository.playlist import (
+    create_playlist,
+    find_my_playlist,
+    find_playlists_by_name,
+)
 
 playlistApi = APIRouter()
 
@@ -17,7 +21,21 @@ CRUD
 """
 
 
-@playlistApi.post("/playlists/save", response_model=Playlist, tags=["Playlist API"])
+@playlistApi.get(
+    "/api/playlists/my-playlist", response_model=Playlist, tags=["Playlist API"]
+)
+async def get_my_playlist(current_user: User = Depends(get_current_user)):
+    try:
+        my_playlist = await find_my_playlist(current_user.id)
+        return playlistEntity(my_playlist)
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="서버 내부 에러",
+        )
+
+
+@playlistApi.post("/api/playlists/save", response_model=Playlist, tags=["Playlist API"])
 async def save_playlist(
     playlist: SavePlaylistModel, current_user: User = Depends(get_current_user)
 ):
@@ -32,7 +50,7 @@ async def save_playlist(
 
 
 @playlistApi.get(
-    "/playlists/search/{name}", response_model=list[Playlist], tags=["Playlist API"]
+    "/api/playlists/search/{name}", response_model=list[Playlist], tags=["Playlist API"]
 )
 async def search_playlist(name: str):
     try:
