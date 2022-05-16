@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from bson import ObjectId
 from config.db import conn
 from models.playlist import Playlist, SavePlaylistModel
 from modules.hash import Hash
@@ -6,6 +8,10 @@ from modules.hash import Hash
 
 async def find_my_playlist(current_user_id: str):
     return await conn.playlists.find_one({"owner": current_user_id})
+
+
+async def find_playlist_by_id(playlist_id: str):
+    return await conn.playlists.find_one({"_id": ObjectId(playlist_id)})
 
 
 async def create_playlist(playlist: SavePlaylistModel, owner: str):

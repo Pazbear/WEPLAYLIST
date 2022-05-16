@@ -4,7 +4,12 @@ from schemas.user import userEntity
 from starlette.status import HTTP_201_CREATED
 from fastapi.security import OAuth2PasswordRequestForm
 
-from repository.user import auth, create_user, get_current_user
+from repository.user import (
+    auth,
+    create_user,
+    get_current_user,
+    get_user_without_password,
+)
 from modules.hash import Hash
 from modules.jwt import create_access_token
 
@@ -19,6 +24,11 @@ Service
 @userApi.get("/api/users/me", response_model=User, tags=["User API"])
 async def read_me(current_user: User = Depends(get_current_user)):
     return userEntity(current_user)
+
+
+@userApi.get("/api/users/{user_id}", response_model=User, tags=["User API"])
+async def get_user(user_id: str):
+    return userEntity(await get_user_without_password(user_id))
 
 
 @userApi.post("/api/users/register", status_code=HTTP_201_CREATED, tags=["User API"])

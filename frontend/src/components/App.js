@@ -2,33 +2,23 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import LoginModal from './views/LoginModal';
 
-import { Table, Tag, Space, Input } from 'antd';
+import { Table, Tag, Space, Select } from 'antd';
 import { useDispatch } from 'react-redux';
-import { authUser } from '../_actions/user_actions';
-import { my_playlist, search_playlist } from '../_actions/playlist_actions';
+import { authUser, getUser } from '../_actions/user_actions';
+import { get_playlist_by_id, my_playlist, search_playlist } from '../_actions/playlist_actions';
+import { get_musics_by_playlist_id } from '../_actions/music_actions';
 const { Column, ColumnGroup } = Table
-const { Search } = Input
+const { Option } = Select;
 
 function App() {
     const [isLoaderActive, setIsLoaderActive] = useState(true)
     const [onLoginModal, setOnLoginModal] = useState(false)
     const [myPlaylist, setMyPlaylist] = useState(null)
-    const [playlists, setPlaylists] = useState([{ name: "테스트1", musics: 6 }, { name: "테스트2", musics: 5 }, { name: "테스트3", musics: 1 },])
+    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
+    const [selectedPlaylist, setSelectedPlaylist] = useState(null)
+    const [searchedPlaylists, setSearchedPlaylists] = useState(null)
     const [musics, setMusics] = useState(null)
     const [Me, setMe] = useState(null)
-
-    const dummyData1 = [
-        {
-            name: '정이라고 하자',
-            artist: '빅나티',
-            length: '3:12',
-        },
-        {
-            name: '스물다섯 스물하나',
-            artist: '자우림',
-            length: '3:25',
-        },
-    ];
 
     const dispatch = useDispatch()
 
@@ -58,19 +48,48 @@ function App() {
         }
     }, [Me])
 
-    const onShowMusic = () => {
-        setMusics(dummyData1)
+    useEffect(() => {
+        if (selectedPlaylistId) {
+            dispatch(get_playlist_by_id(selectedPlaylistId))
+                .then(response => {
+                    let playlist = response.payload
+                    dispatch(getUser(playlist.owner))
+                        .then(response => {
+                            playlist.owner = response.payload
+                            setSelectedPlaylist(playlist)
+                            console.log(playlist)
+                        }).catch(error => {
+                            console.error(error)
+                        })
+                }).catch(error => {
+                    console.error(error)
+                })
+        }
+    }, [selectedPlaylistId])
+
+    const ShowMusic = (playlist_id) => {
+        setSelectedPlaylistId(playlist_id)
+        dispatch(get_musics_by_playlist_id(playlist_id))
+            .then(response => {
+                setMusics(response.payload)
+            }).catch(error => {
+                console.error(error)
+            })
     }
 
     const onSearchPlaylist = value => {
         if (value) {
             dispatch(search_playlist(value))
                 .then(response => {
-                    console.log(response.payload)
+                    setSearchedPlaylists(response.payload)
                 }).catch(error => {
                     console.error(error)
                 })
         }
+    }
+
+    const onChangeSearchingPlaylist = value => {
+        ShowMusic(value)
     }
 
     return (
@@ -157,44 +176,58 @@ function App() {
                                 <aside class="widget widget-shop widget_tags_entries">
                                     <h3 class="widget-title-shop">내 플레이리스트</h3>
                                     <ul class="shop-catgories-links">
-                                        {myPlaylist && <li><a onClick={() => onShowMusic()}>{myPlaylist.name} <span>{myPlaylist.musics}</span></a></li>}
+                                        {myPlaylist && <li><a onClick={() => ShowMusic(myPlaylist.id)}>{myPlaylist.name} <span>{myPlaylist.musics}</span></a></li>}
                                     </ul>
                                 </aside>
 
 
                                 <aside class="widget widget-shop widgit_add">
                                     <h2 class="widget-title-shop">플레이리스트 <span>검색</span></h2>
-                                    <Search
-                                        placeholder="플레이리스트명을 검색해주세요"
-                                        allowClear
-                                        enterButton="Search"
-                                        size="large"
+                                    <Select
+                                        showSearch
+                                        placeholder={"플레이리스트를 입력해주세요"}
+                                        style={{ width: 200 }}
+                                        defaultActiveFirstOption={false}
+                                        showArrow={false}
+                                        filterOption={false}
                                         onSearch={onSearchPlaylist}
-                                    />
+                                        onChange={onChangeSearchingPlaylist}
+                                        notFoundContent={null}
+                                    >
+                                        {searchedPlaylists && searchedPlaylists.map((playlist) => <Option key={playlist.id}>{playlist.name}</Option>)}
+                                    </Select>
                                 </aside>
                             </div>
                             {/*<!-- /.col-lg-3 -->*/}
 
                             <div class="col-xl-9 col-lg-8 col-md-8">
                                 <div style={{ width: '100%', display: 'flex', justifyContent: 'end', marginBottom: '30px' }}>
-                                    <Search placeholder="input search text" style={{ width: 200 }} />
+
                                 </div>
                                 <div class="woocommerce columns-3 row" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                                    {musics ? <Table dataSource={musics}>
-                                        <Column title="Name" dataIndex="name" key="name" />
-                                        <Column title="Artist" dataIndex="artist" key="artist" />
-                                        <Column title="Length" dataIndex="length" key="length" />
-                                        <Column
-                                            title="Action"
-                                            key="action"
-                                            render={(text, record) => (
-                                                <Space size="middle">
-                                                    <a>Invite {record.lastName}</a>
-                                                    <a>Delete</a>
-                                                </Space>
-                                            )}
-                                        />
-                                    </Table> : <div>플레이리스트를 선택해주세요</div>}
+
+                                    {musics ?
+                                        <Space direction='vertical' style={{ width: '90%' }} >
+                                            <div>
+                                                {selectedPlaylist && <div>{selectedPlaylist.name}</div>}
+                                            </div>
+                                            <Table dataSource={musics}>
+                                                <Column title="Name" dataIndex="name" key="name" />
+                                                <Column title="Artist" dataIndex="artist" key="artist" />
+                                                <Column title="Length" dataIndex="length" key="length" />
+                                                <Column
+                                                    title="Action"
+                                                    key="action"
+                                                    render={(text, record) => (
+                                                        <Space size="middle">
+                                                            <a>Invite {record.lastName}</a>
+                                                            <a>Delete</a>
+                                                        </Space>
+                                                    )}
+                                                />
+                                            </Table>
+                                        </Space>
+                                        : <div>플레이리스트를 선택해주세요</div>}
                                 </div>
                             </div>
                             {/*<!-- /.col-lg-9 -->*/}

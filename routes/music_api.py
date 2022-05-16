@@ -3,7 +3,7 @@ from config.db import conn
 from models.music import Music, AddMusicModel
 from models.user import User
 from modules.oauth import get_current_user
-from repository.music import create_music
+from repository.music import create_music, find_musics_by_playlist_id
 from schemas.music import musicEntity, musicsEntity
 from bson import ObjectId
 from starlette.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED
@@ -23,6 +23,19 @@ async def add_music(
     try:
         await create_music(music)
         return Response(status_code=HTTP_201_CREATED)
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="서버 내부 에러",
+        )
+
+
+@musicApi.get("/api/musics/get/", response_model=list[Music], tags=["Music API"])
+async def get_musics_by_playlist_id(playlist_id: str = ""):
+    print(playlist_id)
+    try:
+        musics = await find_musics_by_playlist_id(playlist_id)
+        return musicsEntity(musics)
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

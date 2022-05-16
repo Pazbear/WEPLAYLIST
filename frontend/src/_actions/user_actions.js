@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {
     LOGIN_USER,
+    GET_USER,
     REGISTER_USER,
     AUTH_USER,
 } from './types';
@@ -21,6 +22,16 @@ export function loginUser(dataToSubmit) {
 
     return {
         type: LOGIN_USER,
+        payload: request
+    }
+}
+
+export function getUser(user_id) {
+    const request = axios.get(`${ApiUrl}/${user_id}`, AxiosConfig)
+        .then(response => response.data)
+        .catch(error => error.response.data);
+    return {
+        type: GET_USER,
         payload: request
     }
 }

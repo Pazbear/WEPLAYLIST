@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {
     MY_PLAYLIST,
-    SEARCH_PLAYLIST
+    GET_PLAYLIST_BY_ID,
+    SEARCH_PLAYLIST,
 } from './types';
 
 
@@ -14,6 +15,16 @@ export function my_playlist() {
         .catch(error => error.response.data);
     return {
         type: MY_PLAYLIST,
+        payload: request
+    }
+}
+
+export function get_playlist_by_id(playlist_id) {
+    const request = axios.get(`${ApiUrl}/${playlist_id}`, AxiosConfig)
+        .then(response => response.data)
+        .catch(error => error.response.data);
+    return {
+        type: GET_PLAYLIST_BY_ID,
         payload: request
     }
 }
