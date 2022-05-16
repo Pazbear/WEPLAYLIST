@@ -1,8 +1,11 @@
+from schemas.user import userEntity
+
+
 def playlistEntity(item) -> dict:
     return {
         "id": str(item["_id"]),
         "name": item["name"],
-        "owner": item["owner"],
+        "owner": userEntity(item["owner"]),
         "password": item["password"],
         "created_at": item["created_at"],
         "updated_at": item["updated_at"],

@@ -3,6 +3,7 @@ from config.db import conn
 from models.playlist import Playlist, SavePlaylistModel
 from models.user import User
 from modules.oauth import get_current_user
+from repository.user import get_user_without_password
 from schemas.playlist import playlistEntity, playlistsEntity
 from modules.hash import Hash
 from bson import ObjectId
@@ -28,6 +29,7 @@ CRUD
 async def get_my_playlist(current_user: User = Depends(get_current_user)):
     try:
         my_playlist = await find_my_playlist(current_user.id)
+        my_playlist["owner"] = await get_user_without_password(my_playlist["owner"])
         return playlistEntity(my_playlist)
     except:
         raise HTTPException(
@@ -41,7 +43,9 @@ async def get_my_playlist(current_user: User = Depends(get_current_user)):
 )
 async def get_playlist_by_id(playlist_id: str):
     try:
-        return playlistEntity(await find_playlist_by_id(playlist_id=playlist_id))
+        playlist = await find_playlist_by_id(playlist_id=playlist_id)
+        playlist["owner"] = await get_user_without_password(playlist["owner"])
+        return playlistEntity(playlist)
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

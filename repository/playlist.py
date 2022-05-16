@@ -2,8 +2,9 @@ from datetime import datetime
 
 from bson import ObjectId
 from config.db import conn
-from models.playlist import Playlist, SavePlaylistModel
+from models.playlist import CreatePlaylistModel, Playlist, SavePlaylistModel
 from modules.hash import Hash
+from repository.user import get_user_without_password
 
 
 async def find_my_playlist(current_user_id: str):
@@ -15,7 +16,7 @@ async def find_playlist_by_id(playlist_id: str):
 
 
 async def create_playlist(playlist: SavePlaylistModel, owner: str):
-    new_playlist = Playlist(
+    new_playlist = CreatePlaylistModel(
         name=playlist.name,
         owner=owner,
         password=Hash.bcrypt(playlist.password),
@@ -30,5 +31,6 @@ async def create_playlist(playlist: SavePlaylistModel, owner: str):
 async def find_playlists_by_name(name: str):
     playlists = []
     async for playlist in conn.playlists.find({"name": {"$regex": name}}):
+        playlist["owner"] = await get_user_without_password(id=playlist["owner"])
         playlists.append(playlist)
     return playlists
