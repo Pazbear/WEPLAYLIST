@@ -7,6 +7,7 @@ class Music(BaseModel):
     id: Optional[str]
     name: str
     artist: str
+    youtube_url: str
     length: str
     playlist_id: str
     created_at: Optional[datetime] = Field(default=datetime.now())
@@ -19,5 +20,6 @@ class Music(BaseModel):
 class AddMusicModel(BaseModel):
     name: str
     artist: str
-    length: str
+    youtube_url: str
     playlist_id: str
+    password: str

@@ -15,6 +15,9 @@ openpyxl = "*"
 python-jose = "*"
 python-multipart = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
+youtube-dl = "*"
+certifi = "*"
+pafy = {git = "https://github.com/Cupcakus/pafy"}
 
 [dev-packages]
 

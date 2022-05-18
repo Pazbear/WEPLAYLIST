@@ -7,6 +7,11 @@ from modules.hash import Hash
 from repository.user import get_user_without_password
 
 
+async def verify_playlist_password(playlist_id: str, password: str):
+    playlist = await conn.playlists.find_one({"_id": ObjectId(playlist_id)})
+    return Hash.verify(password, playlist["password"])
+
+
 async def find_my_playlist(current_user_id: str):
     return await conn.playlists.find_one({"owner": current_user_id})
 

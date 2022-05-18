@@ -2,17 +2,21 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import LoginModal from './views/LoginModal';
 
-import { Table, Tag, Space, Select } from 'antd';
+import { Table, Tag, Space, Select, Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { authUser, getUser } from '../_actions/user_actions';
 import { get_playlist_by_id, my_playlist, search_playlist } from '../_actions/playlist_actions';
 import { get_musics_by_playlist_id } from '../_actions/music_actions';
+import RegisterModal from './views/RegisterModal';
+import ReactPlayer from 'react-player/youtube'
+
 const { Column, ColumnGroup } = Table
 const { Option } = Select;
 
 function App() {
     const [isLoaderActive, setIsLoaderActive] = useState(true)
     const [onLoginModal, setOnLoginModal] = useState(false)
+    const [onRegisterModal, setOnRegisterModal] = useState(false)
     const [myPlaylist, setMyPlaylist] = useState(null)
     const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
     const [selectedPlaylist, setSelectedPlaylist] = useState(null)
@@ -53,14 +57,7 @@ function App() {
             dispatch(get_playlist_by_id(selectedPlaylistId))
                 .then(response => {
                     let playlist = response.payload
-                    dispatch(getUser(playlist.owner))
-                        .then(response => {
-                            playlist.owner = response.payload
-                            setSelectedPlaylist(playlist)
-                            console.log(playlist)
-                        }).catch(error => {
-                            console.error(error)
-                        })
+                    setSelectedPlaylist(playlist)
                 }).catch(error => {
                     console.error(error)
                 })
@@ -95,6 +92,7 @@ function App() {
     return (
         <div>
             {onLoginModal && <LoginModal setOnModal={(bool) => setOnLoginModal(bool)} />}
+            {onRegisterModal && <RegisterModal setOnModal={(bool) => setOnRegisterModal(bool)} />}
             <div class="loader loader-bar-ping-pong is-active" style={isLoaderActive ? {} : { display: 'none' }}></div>
             <div id="site">
                 {/*<!--=========================-->
@@ -122,7 +120,7 @@ function App() {
                                 </ul>
                                 :
                                 <ul class="user-login float-right">
-                                    <li><a href="#">Sing Up</a></li>
+                                    <li><a href="#" onClick={() => setOnRegisterModal(true)}>Sign Up</a></li>
                                     <li><a href="#" onClick={() => setOnLoginModal(true)}>Sign In</a></li>
                                 </ul>
                             }
@@ -147,7 +145,7 @@ function App() {
 
                         <ul class="user-link nav justify-content-end">
                             <li><a onClick={() => setOnLoginModal(true)}><i class="fa fa-user"></i>Login</a></li>
-                            <li><a ><i class="fa fa-sign-in"></i>Sign Up</a></li>
+                            <li><a onClick={() => setOnRegisterModal(true)}><i class="fa fa-sign-in"></i>Sign Up</a></li>
                         </ul>
 
                         <div id="nav-toggle" class="nav-toggle hidden-md">
@@ -210,6 +208,12 @@ function App() {
                                         <Space direction='vertical' style={{ width: '90%' }} >
                                             <div>
                                                 {selectedPlaylist && <div>{selectedPlaylist.name}</div>}
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                {selectedPlaylist && <div>{selectedPlaylist.owner.username}</div>}
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                {selectedPlaylist && <Button>노래 추가</Button>}
                                             </div>
                                             <Table dataSource={musics}>
                                                 <Column title="Name" dataIndex="name" key="name" />

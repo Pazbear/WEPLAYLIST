@@ -1,3 +1,4 @@
+import ssl
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.user_api import userApi as userApiRouter
@@ -5,6 +6,8 @@ from routes.playlist_api import playlistApi as playlistApiRouter
 from routes.music_api import musicApi as musicApiRouter
 from docs import tags_metadata
 from fastapi.middleware.cors import CORSMiddleware
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 app = FastAPI(
