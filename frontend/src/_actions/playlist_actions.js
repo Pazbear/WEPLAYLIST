@@ -9,7 +9,7 @@ import {
 const ApiUrl = "http://localhost:8000/api/playlists"
 const AxiosConfig = { headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('jwtToken')}` } }
 
-export function my_playlist() {
+export function getMyPlaylist() {
     const request = axios.get(`${ApiUrl}/my-playlist`, AxiosConfig)
         .then(response => response.data)
         .catch(error => error.response.data);
@@ -19,7 +19,7 @@ export function my_playlist() {
     }
 }
 
-export function get_playlist_by_id(playlist_id) {
+export function getPlaylistById(playlist_id) {
     const request = axios.get(`${ApiUrl}/${playlist_id}`, AxiosConfig)
         .then(response => response.data)
         .catch(error => error.response.data);
@@ -29,7 +29,7 @@ export function get_playlist_by_id(playlist_id) {
     }
 }
 
-export function search_playlist(input_str) {
+export function searchPlaylist(input_str) {
     const request = axios.get(`${ApiUrl}/search/${input_str}`, AxiosConfig)
         .then(response => response.data)
         .catch(error => error.response.data);

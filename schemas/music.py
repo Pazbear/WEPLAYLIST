@@ -2,7 +2,7 @@ def musicEntity(item) -> dict:
     return {
         "id": str(item["_id"]),
         "name": item["name"],
-        "artist": item["owner"],
+        "artist": item["artist"],
         "youtube_url": item["youtube_url"],
         "length": item["length"],
         "playlist_id": item["playlist_id"],

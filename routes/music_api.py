@@ -23,6 +23,7 @@ CRUD
 async def add_music(
     music: AddMusicModel, current_user: User = Depends(get_current_user)
 ):
+    print(music)
     try:
         is_verified = await verify_playlist_password(music.playlist_id, music.password)
         print(is_verified)
@@ -48,7 +49,7 @@ async def get_musics_by_playlist_id(playlist_id: str = ""):
     try:
         musics = await find_musics_by_playlist_id(playlist_id)
         return musicsEntity(musics)
-    except:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="서버 내부 에러",

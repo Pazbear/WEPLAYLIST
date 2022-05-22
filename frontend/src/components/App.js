@@ -1,22 +1,26 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import LoginModal from './views/LoginModal';
 
 import { Table, Tag, Space, Select, Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { authUser, getUser } from '../_actions/user_actions';
-import { get_playlist_by_id, my_playlist, search_playlist } from '../_actions/playlist_actions';
-import { get_musics_by_playlist_id } from '../_actions/music_actions';
+import { getMyPlaylist, getPlaylistById, searchPlaylist } from '../_actions/playlist_actions';
+import { getMusicsByPlaylistId, get_musics_by_playlist_id } from '../_actions/music_actions';
 import RegisterModal from './views/RegisterModal';
-import ReactPlayer from 'react-player/youtube'
+import CustomPlayer from './views/_App/CustomPlayer'
+import AddMusicModal from './views/AddMusicModal';
 
 const { Column, ColumnGroup } = Table
 const { Option } = Select;
 
 function App() {
     const [isLoaderActive, setIsLoaderActive] = useState(true)
+
     const [onLoginModal, setOnLoginModal] = useState(false)
     const [onRegisterModal, setOnRegisterModal] = useState(false)
+    const [onAddMusicModal, setOnAddMusicModal] = useState(false)
+
     const [myPlaylist, setMyPlaylist] = useState(null)
     const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
     const [selectedPlaylist, setSelectedPlaylist] = useState(null)
@@ -43,7 +47,7 @@ function App() {
 
     useEffect(() => {
         if (Me) {
-            dispatch(my_playlist())
+            dispatch(getMyPlaylist())
                 .then(response => {
                     setMyPlaylist(response.payload)
                 }).catch(error => {
@@ -54,7 +58,7 @@ function App() {
 
     useEffect(() => {
         if (selectedPlaylistId) {
-            dispatch(get_playlist_by_id(selectedPlaylistId))
+            dispatch(getPlaylistById(selectedPlaylistId))
                 .then(response => {
                     let playlist = response.payload
                     setSelectedPlaylist(playlist)
@@ -66,7 +70,7 @@ function App() {
 
     const ShowMusic = (playlist_id) => {
         setSelectedPlaylistId(playlist_id)
-        dispatch(get_musics_by_playlist_id(playlist_id))
+        dispatch(getMusicsByPlaylistId(playlist_id))
             .then(response => {
                 setMusics(response.payload)
             }).catch(error => {
@@ -76,8 +80,9 @@ function App() {
 
     const onSearchPlaylist = value => {
         if (value) {
-            dispatch(search_playlist(value))
+            dispatch(searchPlaylist(value))
                 .then(response => {
+                    console.log(response)
                     setSearchedPlaylists(response.payload)
                 }).catch(error => {
                     console.error(error)
@@ -89,10 +94,15 @@ function App() {
         ShowMusic(value)
     }
 
+    const refreshMusics = () => {
+        ShowMusic(selectedPlaylistId)
+    }
+
     return (
         <div>
             {onLoginModal && <LoginModal setOnModal={(bool) => setOnLoginModal(bool)} />}
             {onRegisterModal && <RegisterModal setOnModal={(bool) => setOnRegisterModal(bool)} />}
+            {onAddMusicModal && <AddMusicModal playlist_id={selectedPlaylistId} setOnModal={(bool) => setOnAddMusicModal(bool)} refreshMusics={refreshMusics} />}
             <div class="loader loader-bar-ping-pong is-active" style={isLoaderActive ? {} : { display: 'none' }}></div>
             <div id="site">
                 {/*<!--=========================-->
@@ -213,19 +223,21 @@ function App() {
                                                 {selectedPlaylist && <div>{selectedPlaylist.owner.username}</div>}
                                             </div>
                                             <div style={{ textAlign: 'right' }}>
-                                                {selectedPlaylist && <Button>노래 추가</Button>}
+                                                {selectedPlaylist && <Button onClick={() => setOnAddMusicModal(true)}>노래 추가</Button>}
                                             </div>
-                                            <Table dataSource={musics}>
+                                            <Table dataSource={musics} pagination={{ position: ["none"] }}>
                                                 <Column title="Name" dataIndex="name" key="name" />
                                                 <Column title="Artist" dataIndex="artist" key="artist" />
                                                 <Column title="Length" dataIndex="length" key="length" />
                                                 <Column
                                                     title="Action"
                                                     key="action"
-                                                    render={(text, record) => (
+                                                    dataIndex="youtube_url"
+                                                    render={youtube_url => (
                                                         <Space size="middle">
-                                                            <a>Invite {record.lastName}</a>
-                                                            <a>Delete</a>
+                                                            <CustomPlayer
+                                                                youtube_url={youtube_url}
+                                                            />
                                                         </Space>
                                                     )}
                                                 />
