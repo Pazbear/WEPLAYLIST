@@ -3,6 +3,7 @@ import {
     MY_PLAYLIST,
     GET_PLAYLIST_BY_ID,
     SEARCH_PLAYLIST,
+    SAVE_PLAYLIST,
 } from './types';
 
 
@@ -35,6 +36,16 @@ export function searchPlaylist(input_str) {
         .catch(error => error.response.data);
     return {
         type: SEARCH_PLAYLIST,
+        payload: request
+    }
+}
+
+export function savePlaylist(dataToSubmit) {
+    const request = axios.post(`${ApiUrl}/save`, dataToSubmit, AxiosConfig)
+        .then(response => response.status)
+        .catch(error => error.response.data);
+    return {
+        type: SAVE_PLAYLIST,
         payload: request
     }
 }

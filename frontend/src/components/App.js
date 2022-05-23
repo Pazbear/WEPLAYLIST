@@ -10,6 +10,8 @@ import { getMusicsByPlaylistId, get_musics_by_playlist_id } from '../_actions/mu
 import RegisterModal from './views/RegisterModal';
 import CustomPlayer from './views/_App/CustomPlayer'
 import AddMusicModal from './views/AddMusicModal';
+import SavePlaylistModal from './views/SavePlaylistModal';
+import CustomMainPlayer from './views/_App/CustomMainPlayer';
 
 const { Column, ColumnGroup } = Table
 const { Option } = Select;
@@ -20,6 +22,7 @@ function App() {
     const [onLoginModal, setOnLoginModal] = useState(false)
     const [onRegisterModal, setOnRegisterModal] = useState(false)
     const [onAddMusicModal, setOnAddMusicModal] = useState(false)
+    const [onSavePlaylistModal, setOnSavePlaylistModal] = useState(false)
 
     const [myPlaylist, setMyPlaylist] = useState(null)
     const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
@@ -82,7 +85,6 @@ function App() {
         if (value) {
             dispatch(searchPlaylist(value))
                 .then(response => {
-                    console.log(response)
                     setSearchedPlaylists(response.payload)
                 }).catch(error => {
                     console.error(error)
@@ -102,7 +104,8 @@ function App() {
         <div>
             {onLoginModal && <LoginModal setOnModal={(bool) => setOnLoginModal(bool)} />}
             {onRegisterModal && <RegisterModal setOnModal={(bool) => setOnRegisterModal(bool)} />}
-            {onAddMusicModal && <AddMusicModal playlist_id={selectedPlaylistId} setOnModal={(bool) => setOnAddMusicModal(bool)} refreshMusics={refreshMusics} />}
+            {onAddMusicModal && <AddMusicModal playlist_id={selectedPlaylistId} len_musics={musics.length} setOnModal={(bool) => setOnAddMusicModal(bool)} refreshMusics={refreshMusics} />}
+            {onSavePlaylistModal && <SavePlaylistModal setOnModal={(bool) => setOnSavePlaylistModal(bool)} />}
             <div class="loader loader-bar-ping-pong is-active" style={isLoaderActive ? {} : { display: 'none' }}></div>
             <div id="site">
                 {/*<!--=========================-->
@@ -184,7 +187,14 @@ function App() {
                                 <aside class="widget widget-shop widget_tags_entries">
                                     <h3 class="widget-title-shop">내 플레이리스트</h3>
                                     <ul class="shop-catgories-links">
-                                        {myPlaylist && <li><a onClick={() => ShowMusic(myPlaylist.id)}>{myPlaylist.name} <span>{myPlaylist.musics}</span></a></li>}
+                                        {myPlaylist ?
+                                            <li><a onClick={() => ShowMusic(myPlaylist.id)}>{myPlaylist.name} <span>{myPlaylist.musics}</span></a></li>
+                                            :
+                                            Me ?
+                                                <li><Button onClick={() => setOnSavePlaylistModal(true)}>내 플레이리스트 만들기</Button></li>
+                                                :
+                                                <li>로그인이 필요한 서비스입니다.</li>
+                                        }
                                     </ul>
                                 </aside>
 
@@ -225,6 +235,11 @@ function App() {
                                             <div style={{ textAlign: 'right' }}>
                                                 {selectedPlaylist && <Button onClick={() => setOnAddMusicModal(true)}>노래 추가</Button>}
                                             </div>
+                                            <CustomMainPlayer
+                                                youtube_url={musics.map((music) => {
+                                                    return music.youtube_url
+                                                })}
+                                            />
                                             <Table dataSource={musics} pagination={{ position: ["none"] }}>
                                                 <Column title="Name" dataIndex="name" key="name" />
                                                 <Column title="Artist" dataIndex="artist" key="artist" />

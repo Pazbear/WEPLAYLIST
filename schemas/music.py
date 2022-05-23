@@ -6,6 +6,7 @@ def musicEntity(item) -> dict:
         "youtube_url": item["youtube_url"],
         "length": item["length"],
         "playlist_id": item["playlist_id"],
+        "order": item["order"],
         "created_at": item["created_at"],
         "updated_at": item["updated_at"],
     }

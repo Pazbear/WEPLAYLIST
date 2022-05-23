@@ -1,7 +1,8 @@
 import {
     MY_PLAYLIST,
     GET_PLAYLIST_BY_ID,
-    SEARCH_PLAYLIST
+    SEARCH_PLAYLIST,
+    SAVE_PLAYLIST
 } from '../_actions/types';
 
 
@@ -14,6 +15,8 @@ export default function (state = {}, action) {
             return { ...state, get_playlist_by_id: action.payload }
         case SEARCH_PLAYLIST:
             return { ...state, searched_playlist: action.payload }
+        case SAVE_PLAYLIST:
+            return { ...state, save_playlist: action.payload }
         default:
             return state
     }

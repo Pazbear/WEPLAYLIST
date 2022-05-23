@@ -10,6 +10,7 @@ class Music(BaseModel):
     youtube_url: str
     length: str
     playlist_id: str
+    order: int
     created_at: Optional[datetime] = Field(default=datetime.now())
     updated_at: Optional[datetime] = Field(default=datetime.now())
 
@@ -23,3 +24,9 @@ class AddMusicModel(BaseModel):
     youtube_url: str
     playlist_id: str
     password: str
+    order: int
+
+
+class ChangeMusicOrderModel(BaseModel):
+    music_id1: str
+    music_id2: str

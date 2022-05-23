@@ -29,6 +29,8 @@ CRUD
 async def get_my_playlist(current_user: User = Depends(get_current_user)):
     try:
         my_playlist = await find_my_playlist(current_user.id)
+        if my_playlist == None:
+            return None
         my_playlist["owner"] = await get_user_without_password(my_playlist["owner"])
         return playlistEntity(my_playlist)
     except:
@@ -53,11 +55,19 @@ async def get_playlist_by_id(playlist_id: str):
         )
 
 
-@playlistApi.post("/api/playlists/save", response_model=Playlist, tags=["Playlist API"])
+@playlistApi.post(
+    "/api/playlists/save", status_code=HTTP_201_CREATED, tags=["Playlist API"]
+)
 async def save_playlist(
     playlist: SavePlaylistModel, current_user: User = Depends(get_current_user)
 ):
     try:
+        my_playlist = await find_my_playlist(current_user.id)
+        if my_playlist != None:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="플레이리스트는 1개만 만들 수 있습니다.",
+            )
         await create_playlist(playlist, current_user.id)
         return Response(status_code=HTTP_201_CREATED)
     except:
