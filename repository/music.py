@@ -41,8 +41,8 @@ async def change_music_order_by_id(music_id1: str, music_id2: str):
     music1 = await conn.musics.find_one({"_id": ObjectId(music_id1)})
     music2 = await conn.musics.find_one({"_id": ObjectId(music_id2)})
     await conn.musics.update_one(
-        {"_id": ObjectId(music_id1)}, {"$set": {"order": music2.order}}
+        {"_id": ObjectId(music_id1)}, {"$set": {"order": music2["order"]}}
     )
     await conn.musics.update_one(
-        {"_id": ObjectId(music_id2)}, {"$set": {"order": music1.order}}
+        {"_id": ObjectId(music_id2)}, {"$set": {"order": music1["order"]}}
     )

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {
     ADD_MUSIC,
-    GET_MUSICS_BY_PLAYLIST_ID
+    GET_MUSICS_BY_PLAYLIST_ID,
+    CHANGE_MUSIC_ORDER
 } from './types';
 
 
@@ -24,6 +25,17 @@ export function addMusic(dataToSubmit) {
         .catch(error => error.response.data);
     return {
         type: ADD_MUSIC,
+        payload: request
+    }
+}
+
+export function changeMusicOrder(music_id1, music_id2) {
+    const request = axios.post(`${ApiUrl}/change-order`,
+        { music_id1: music_id1, music_id2: music_id2 }, AxiosConfig)
+        .then(response => response.status)
+        .catch(error => error.response.data);
+    return {
+        type: CHANGE_MUSIC_ORDER,
         payload: request
     }
 }

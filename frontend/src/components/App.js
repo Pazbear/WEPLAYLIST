@@ -6,12 +6,13 @@ import { Table, Tag, Space, Select, Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { authUser, getUser } from '../_actions/user_actions';
 import { getMyPlaylist, getPlaylistById, searchPlaylist } from '../_actions/playlist_actions';
-import { getMusicsByPlaylistId, get_musics_by_playlist_id } from '../_actions/music_actions';
+import { changeMusicOrder, getMusicsByPlaylistId, get_musics_by_playlist_id } from '../_actions/music_actions';
 import RegisterModal from './views/RegisterModal';
 import CustomPlayer from './views/_App/CustomPlayer'
 import AddMusicModal from './views/AddMusicModal';
 import SavePlaylistModal from './views/SavePlaylistModal';
 import CustomMainPlayer from './views/_App/CustomMainPlayer';
+import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons'
 
 const { Column, ColumnGroup } = Table
 const { Option } = Select;
@@ -75,7 +76,14 @@ function App() {
         setSelectedPlaylistId(playlist_id)
         dispatch(getMusicsByPlaylistId(playlist_id))
             .then(response => {
-                setMusics(response.payload)
+                setMusics(response.payload.map((value, index, array) => {
+                    value.id_list = {
+                        prev: array[index - 1] && array[index - 1].id,
+                        curr: value.id,
+                        next: array[index + 1] && array[index + 1].id
+                    }
+                    return value
+                }))
             }).catch(error => {
                 console.error(error)
             })
@@ -99,6 +107,21 @@ function App() {
     const refreshMusics = () => {
         ShowMusic(selectedPlaylistId)
     }
+
+    const onMusicOrderChange = (curr_music_id, change_music_id) => {
+        console.log(curr_music_id, change_music_id)
+        if (change_music_id) {
+            dispatch(changeMusicOrder(curr_music_id, change_music_id))
+                .then(response => {
+                    if (response.payload === 200) {
+                        refreshMusics()
+                    }
+                }).catch(error => {
+                    console.error(error)
+                })
+        }
+    }
+
 
     return (
         <div>
@@ -249,10 +272,21 @@ function App() {
                                                     key="action"
                                                     dataIndex="youtube_url"
                                                     render={youtube_url => (
-                                                        <Space size="middle">
+                                                        <Space size="middle" direction='horizontal'>
                                                             <CustomPlayer
                                                                 youtube_url={youtube_url}
                                                             />
+                                                        </Space>
+                                                    )}
+                                                />
+                                                <Column
+                                                    title=""
+                                                    key="order"
+                                                    dataIndex="id_list"
+                                                    render={music_id_list => (
+                                                        <Space direction='vertical'>
+                                                            <div onClick={() => onMusicOrderChange(music_id_list.curr, music_id_list.prev)}><CaretUpOutlined style={{ color: music_id_list.prev ? '#000000' : '#FFFFFF' }} /></div>
+                                                            <div onClick={() => onMusicOrderChange(music_id_list.curr, music_id_list.next)}><CaretDownOutlined style={{ color: music_id_list.next ? '#000000' : '#FFFFFF' }} /></div>
                                                         </Space>
                                                     )}
                                                 />
