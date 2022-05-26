@@ -1,12 +1,15 @@
+from collections import UserString
+from typing import List
 from fastapi import APIRouter, Depends, Response, status, HTTPException
 from models.user import RegisterModel, User, Token
-from schemas.user import userEntity
+from schemas.user import userEntity, usersEntity
 from starlette.status import HTTP_201_CREATED
 from fastapi.security import OAuth2PasswordRequestForm
 
 from repository.user import (
     auth,
     create_user,
+    find_users_by_name,
     get_current_user,
     get_user_without_password,
 )
@@ -24,6 +27,12 @@ Service
 @userApi.get("/api/users/me", response_model=User, tags=["User API"])
 async def read_me(current_user: User = Depends(get_current_user)):
     return userEntity(current_user)
+
+
+@userApi.get("/api/users/", response_model=List[User], tags=["User API"])
+async def get_users_by_name(name: str):
+    users = await find_users_by_name(name)
+    return usersEntity(users)
 
 
 @userApi.get("/api/users/{user_id}", response_model=User, tags=["User API"])

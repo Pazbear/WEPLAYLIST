@@ -36,10 +36,11 @@ export function getUser(user_id) {
     }
 }
 
+
+
 export function authUser() {
     const request = axios.get(`${ApiUrl}/me`, AxiosConfig)
         .then(response => response.data)
-        .catch(error => error.response.data);
     return {
         type: AUTH_USER,
         payload: request
@@ -47,9 +48,19 @@ export function authUser() {
 }
 
 export function registerUser(dataToSubmit) {
-    const request = axios.post(`${ApiUrl}/register`, dataToSubmit)
+    const request = axios.post(`${ApiUrl}/register`, dataToSubmit, AxiosConfig)
         .then(response => response.data)
         .catch(error => error.response.data);
+
+    return {
+        type: REGISTER_USER,
+        payload: request
+    }
+}
+
+export function searchUsers(name) {
+    const request = axios.get(`${ApiUrl}/?name=${name}`, AxiosConfig)
+        .then(response => response.data)
 
     return {
         type: REGISTER_USER,

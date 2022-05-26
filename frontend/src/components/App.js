@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import LoginModal from './views/LoginModal';
 
-import { Table, Tag, Space, Select, Button } from 'antd';
+import { Table, Tag, Space, Select, Button, Popover, Input, List } from 'antd';
 import { useDispatch } from 'react-redux';
-import { authUser, getUser } from '../_actions/user_actions';
+import { authUser, getUser, searchUser, searchUsers } from '../_actions/user_actions';
 import { getMyPlaylist, getPlaylistById, searchPlaylist } from '../_actions/playlist_actions';
 import { changeMusicOrder, getMusicsByPlaylistId, get_musics_by_playlist_id } from '../_actions/music_actions';
 import RegisterModal from './views/RegisterModal';
@@ -13,9 +13,11 @@ import AddMusicModal from './views/AddMusicModal';
 import SavePlaylistModal from './views/SavePlaylistModal';
 import CustomMainPlayer from './views/_App/CustomMainPlayer';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons'
+import { BsFillPersonPlusFill } from 'react-icons/bs'
 
 const { Column, ColumnGroup } = Table
 const { Option } = Select;
+const { Search } = Input;
 
 function App() {
     const [isLoaderActive, setIsLoaderActive] = useState(true)
@@ -24,6 +26,8 @@ function App() {
     const [onRegisterModal, setOnRegisterModal] = useState(false)
     const [onAddMusicModal, setOnAddMusicModal] = useState(false)
     const [onSavePlaylistModal, setOnSavePlaylistModal] = useState(false)
+
+    const [searchedBuddies, setSearchedBuddies] = useState(null)
 
     const [myPlaylist, setMyPlaylist] = useState(null)
     const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
@@ -55,6 +59,7 @@ function App() {
                 .then(response => {
                     setMyPlaylist(response.payload)
                 }).catch(error => {
+                    console.error("me error")
                     console.error(error)
                 })
         }
@@ -109,7 +114,6 @@ function App() {
     }
 
     const onMusicOrderChange = (curr_music_id, change_music_id) => {
-        console.log(curr_music_id, change_music_id)
         if (change_music_id) {
             dispatch(changeMusicOrder(curr_music_id, change_music_id))
                 .then(response => {
@@ -121,6 +125,37 @@ function App() {
                 })
         }
     }
+
+    const onSearchBuddy = (value) => {
+        console.log(value)
+        dispatch(searchUsers(value))
+            .then(response => {
+                setSearchedBuddies(response.payload)
+            }).catch(error => {
+                console.error(error)
+            })
+    }
+
+    const AddBuddyPopoverContent = (
+        <div>
+            <Search placeholder="input search text" onSearch={onSearchBuddy} style={{ width: 200 }} />
+            {searchedBuddies && (
+                <List
+                    bordered
+                    dataSource={searchedBuddies}
+                    renderItem={searchedBuddy => (
+                        <List.Item>
+                            <List.Item.Meta
+                                title={searchedBuddy.username}
+                            />
+                            <Button style={{ marginLeft: '20px' }}>추가</Button>
+                        </List.Item>
+
+                    )}
+                />
+            )}
+        </div>
+    )
 
 
     return (
@@ -138,11 +173,6 @@ function App() {
                     <div class="top-header">
                         <div class="tim-container clearfix">
                             <ul class="site-social-link">
-                                <li><a href=""><i class="fa fa-facebook"></i></a></li>
-                                <li><a href=""><i class="fa fa-twitter"></i></a></li>
-                                <li><a href=""><i class="fa fa-google-plus"></i></a></li>
-                                <li><a href=""><i class="fa fa-pinterest-p"></i></a></li>
-                                <li><a href=""><i class="fa fa-instagram"></i></a></li>
                             </ul>
                             {/*<!-- /.site-social-link -->*/}
 
@@ -221,6 +251,16 @@ function App() {
                                     </ul>
                                 </aside>
 
+                                <aside class="widget widget-shop widget_tags_entries">
+                                    <h3 class="widget-title-shop">친구의 플레이리스트
+                                        <Popover placement="bottomRight" title={"친구 추가"} content={AddBuddyPopoverContent} trigger="click">
+                                            <BsFillPersonPlusFill style={{ marginLeft: '10px', verticalAlign: 'middle' }} />
+                                        </Popover>
+                                    </h3>
+                                    <ul class="shop-catgories-links">
+
+                                    </ul>
+                                </aside>
 
                                 <aside class="widget widget-shop widgit_add">
                                     <h2 class="widget-title-shop">플레이리스트 <span>검색</span></h2>

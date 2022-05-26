@@ -64,3 +64,10 @@ async def get_user_without_password(id: str):
     user = await conn.users.find_one({"_id": ObjectId(id)})
     user["password"] = ""
     return user
+
+
+async def find_users_by_name(name: str):
+    users = []
+    async for user in conn.users.find({"username": {"$regex": name}}):
+        users.append(user)
+    return users
