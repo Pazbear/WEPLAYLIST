@@ -14,6 +14,7 @@ import SavePlaylistModal from './views/SavePlaylistModal';
 import CustomMainPlayer from './views/_App/CustomMainPlayer';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons'
 import { BsFillPersonPlusFill } from 'react-icons/bs'
+import { getMySubscriptions, subscript } from '../_actions/subscript_actions';
 
 const { Column, ColumnGroup } = Table
 const { Option } = Select;
@@ -27,9 +28,10 @@ function App() {
     const [onAddMusicModal, setOnAddMusicModal] = useState(false)
     const [onSavePlaylistModal, setOnSavePlaylistModal] = useState(false)
 
-    const [searchedBuddies, setSearchedBuddies] = useState(null)
+    const [searchedUsers, setSearchedUsers] = useState(null)
 
     const [myPlaylist, setMyPlaylist] = useState(null)
+    const [mySubscriptions, setMySubscriptions] = useState(null)
     const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
     const [selectedPlaylist, setSelectedPlaylist] = useState(null)
     const [searchedPlaylists, setSearchedPlaylists] = useState(null)
@@ -59,7 +61,12 @@ function App() {
                 .then(response => {
                     setMyPlaylist(response.payload)
                 }).catch(error => {
-                    console.error("me error")
+                    console.error(error)
+                })
+            dispatch(getMySubscriptions())
+                .then(response => {
+                    setMySubscriptions(response.payload)
+                }).catch(error => {
                     console.error(error)
                 })
         }
@@ -126,29 +133,42 @@ function App() {
         }
     }
 
-    const onSearchBuddy = (value) => {
+    const onSearchUsers = (value) => {
         console.log(value)
         dispatch(searchUsers(value))
             .then(response => {
-                setSearchedBuddies(response.payload)
+                setSearchedUsers(response.payload)
             }).catch(error => {
                 console.error(error)
             })
     }
 
-    const AddBuddyPopoverContent = (
+    const onSubscriptClick = (to_user_id) => {
+        console.log(to_user_id)
+        dispatch(subscript({ to_user_id: to_user_id }))
+            .then(response => {
+                if (response.payload === 201) {
+                    alert('구독되었습니다.')
+                }
+            }).catch(error => {
+                alert('구독 실패')
+                console.error(error)
+            })
+    }
+
+    const SubscriptPopoverContent = (
         <div>
-            <Search placeholder="input search text" onSearch={onSearchBuddy} style={{ width: 200 }} />
-            {searchedBuddies && (
+            <Search placeholder="input search text" onSearch={onSearchUsers} style={{ width: 200 }} />
+            {searchedUsers && (
                 <List
                     bordered
-                    dataSource={searchedBuddies}
-                    renderItem={searchedBuddy => (
+                    dataSource={searchedUsers}
+                    renderItem={searchedUser => (
                         <List.Item>
                             <List.Item.Meta
-                                title={searchedBuddy.username}
+                                title={searchedUser.username}
                             />
-                            <Button style={{ marginLeft: '20px' }}>추가</Button>
+                            <Button onClick={() => onSubscriptClick(searchedUser.id)} style={{ marginLeft: '20px' }}>구독</Button>
                         </List.Item>
 
                     )}
@@ -252,13 +272,22 @@ function App() {
                                 </aside>
 
                                 <aside class="widget widget-shop widget_tags_entries">
-                                    <h3 class="widget-title-shop">친구의 플레이리스트
-                                        <Popover placement="bottomRight" title={"친구 추가"} content={AddBuddyPopoverContent} trigger="click">
+                                    <h3 class="widget-title-shop">구독한 유저
+                                        <Popover placement="bottomRight" title={"유저 검색"} content={SubscriptPopoverContent} trigger="click">
                                             <BsFillPersonPlusFill style={{ marginLeft: '10px', verticalAlign: 'middle' }} />
                                         </Popover>
                                     </h3>
                                     <ul class="shop-catgories-links">
-
+                                        {mySubscriptions ?
+                                            mySubscriptions.map((subscription) => (
+                                                <li>{subscription.to_user.username}</li>
+                                            ))
+                                            :
+                                            Me ?
+                                                <div></div>
+                                                :
+                                                <li>로그인이 필요한 서비스입니다.</li>
+                                        }
                                     </ul>
                                 </aside>
 
