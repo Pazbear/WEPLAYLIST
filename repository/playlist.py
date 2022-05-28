@@ -39,3 +39,12 @@ async def find_playlists_by_name(name: str):
         playlist["owner"] = await get_user_without_password(id=playlist["owner"])
         playlists.append(playlist)
     return playlists
+
+
+async def find_playlist_by_user(user_id: str):
+    playlist = await conn.playlists.find_one({"owner": user_id})
+    if not playlist:
+        return None
+    playlist = dict(playlist)
+    playlist["owner"] = await get_user_without_password(id=playlist["owner"])
+    return playlist

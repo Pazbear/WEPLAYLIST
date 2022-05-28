@@ -13,6 +13,7 @@ from repository.playlist import (
     create_playlist,
     find_my_playlist,
     find_playlist_by_id,
+    find_playlist_by_user,
     find_playlists_by_name,
 )
 
@@ -84,6 +85,23 @@ async def search_playlist(name: str):
     try:
         searched_playlists = await find_playlists_by_name(name)
         return playlistsEntity(searched_playlists)
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="서버 내부 에러",
+        )
+
+
+@playlistApi.get("/api/playlists/get/", response_model=Playlist, tags=["Playlist API"])
+async def get_playlist_by_user(user: str = ""):
+    try:
+        playlist = await find_playlist_by_user(user)
+        if not playlist:
+            raise HTTPException(
+                status_code=status.HTTP_204_NO_CONTENT,
+                detail="데이터가 없습니다",
+            )
+        return playlistEntity(playlist)
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

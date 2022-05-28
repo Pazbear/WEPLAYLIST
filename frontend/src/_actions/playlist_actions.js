@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
     MY_PLAYLIST,
     GET_PLAYLIST_BY_ID,
+    GET_PLAYLIST_BY_USER,
     SEARCH_PLAYLIST,
     SAVE_PLAYLIST,
 } from './types';
@@ -46,6 +47,15 @@ export function savePlaylist(dataToSubmit) {
         .catch(error => error.response.data);
     return {
         type: SAVE_PLAYLIST,
+        payload: request
+    }
+}
+
+export function getPlaylistByUser(to_user_id) {
+    const request = axios.get(`${ApiUrl}/get/?user=${to_user_id}`, AxiosConfig)
+        .then(response => response.data)
+    return {
+        type: GET_PLAYLIST_BY_USER,
         payload: request
     }
 }

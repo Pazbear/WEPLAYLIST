@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
+import Logo from '../assets/WEPLAYLIST_logo.png'
 import LoginModal from './views/LoginModal';
 
 import { Table, Tag, Space, Select, Button, Popover, Input, List } from 'antd';
 import { useDispatch } from 'react-redux';
 import { authUser, getUser, searchUser, searchUsers } from '../_actions/user_actions';
-import { getMyPlaylist, getPlaylistById, searchPlaylist } from '../_actions/playlist_actions';
+import { getMyPlaylist, getPlaylistById, getPlaylistByUser, searchPlaylist } from '../_actions/playlist_actions';
 import { changeMusicOrder, getMusicsByPlaylistId, get_musics_by_playlist_id } from '../_actions/music_actions';
 import RegisterModal from './views/RegisterModal';
 import CustomPlayer from './views/_App/CustomPlayer'
@@ -63,12 +64,7 @@ function App() {
                 }).catch(error => {
                     console.error(error)
                 })
-            dispatch(getMySubscriptions())
-                .then(response => {
-                    setMySubscriptions(response.payload)
-                }).catch(error => {
-                    console.error(error)
-                })
+            ShowSubscriptions()
         }
     }, [Me])
 
@@ -101,6 +97,15 @@ function App() {
             })
     }
 
+    const ShowSubscriptions = () => {
+        dispatch(getMySubscriptions())
+            .then(response => {
+                setMySubscriptions(response.payload)
+            }).catch(error => {
+                console.error(error)
+            })
+    }
+
     const onSearchPlaylist = value => {
         if (value) {
             dispatch(searchPlaylist(value))
@@ -119,6 +124,12 @@ function App() {
     const refreshMusics = () => {
         ShowMusic(selectedPlaylistId)
     }
+
+    const refreshSubscriptions = () => {
+        ShowSubscriptions()
+    }
+
+
 
     const onMusicOrderChange = (curr_music_id, change_music_id) => {
         if (change_music_id) {
@@ -149,10 +160,22 @@ function App() {
             .then(response => {
                 if (response.payload === 201) {
                     alert('구독되었습니다.')
+                    refreshSubscriptions()
                 }
             }).catch(error => {
                 alert('구독 실패')
                 console.error(error)
+            })
+    }
+
+    const onShowSubscriptPlaylistClick = (to_user) => {
+        console.log(to_user)
+        dispatch(getPlaylistByUser(to_user.id))
+            .then(response => {
+                setSelectedPlaylistId(response.payload.id)
+                ShowMusic(response.payload.id)
+            }).catch(error => {
+                setMusics(null)
             })
     }
 
@@ -194,6 +217,7 @@ function App() {
                         <div class="tim-container clearfix">
                             <ul class="site-social-link">
                             </ul>
+                            <img src={Logo} />
                             {/*<!-- /.site-social-link -->*/}
 
                             {Me ?
@@ -280,7 +304,7 @@ function App() {
                                     <ul class="shop-catgories-links">
                                         {mySubscriptions ?
                                             mySubscriptions.map((subscription) => (
-                                                <li>{subscription.to_user.username}</li>
+                                                <li onClick={() => onShowSubscriptPlaylistClick(subscription.to_user)}>{subscription.to_user.username}</li>
                                             ))
                                             :
                                             Me ?

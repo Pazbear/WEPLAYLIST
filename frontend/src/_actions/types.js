@@ -5,6 +5,7 @@ export const GET_USER = 'GET_USER';
 
 export const MY_PLAYLIST = 'MY_PLAYLIST';
 export const GET_PLAYLIST_BY_ID = 'GET_PLAYLIST';
+export const GET_PLAYLIST_BY_USER = 'GET_PLAYLIST_BY_USER';
 export const SAVE_PLAYLIST = 'SAVE_PLAYLIST';
 export const SEARCH_PLAYLIST = 'SEARCH_PLAYLIST';
 
