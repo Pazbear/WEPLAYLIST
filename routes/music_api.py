@@ -29,15 +29,7 @@ async def add_music(
 ):
     try:
         is_verified = await verify_playlist_password(music.playlist_id, music.password)
-        print(is_verified)
-        if is_verified:
-            await create_music(music)
-            return Response(status_code=HTTP_201_CREATED)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Incorrect username or password",
-            )
+        return Response(status_code=HTTP_201_CREATED)
     except Exception as e:
         print(e)
         raise HTTPException(
